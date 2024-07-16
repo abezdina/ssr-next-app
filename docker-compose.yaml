@@ -1,21 +1,26 @@
 version: '3.8'
 services:
-  app:
+  nodejs-app:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: app
+      args:
+        - PORT=${PORT}
+    container_name: nodejs-app
     restart: always
     ports:
-      - 3000:3000
+      - 3000:${PORT}
     environment:
       - MONGO_DB_USERNAME=${MONGO_ADMIN_USER}
       - MONGO_DB_PASSWORD=${MONGO_ADMIN_PASSWORD}
       - PORT=3000
     depends_on:
       - mongo-db
-    networks:
-      - app-network
+    env_file:
+      - .env
+    volumes:
+      - ./server:/usr/src/app
+      - /usr/src/app/node_modules
   mongo-db:
     image: mongo:latest
     container_name: mongo-db
@@ -27,8 +32,6 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ADMIN_PASSWORD}
     volumes:
       - mongo-data:/data/db
-    networks:
-      - app-network
   mongo-express:
     image: mongo-express:latest
     container_name: mongo-express
@@ -41,13 +44,8 @@ services:
       - ME_CONFIG_MONGODB_SERVER=mongo-db
     depends_on:
       - mongo-db
-    networks:
-      - app-network
 
 volumes:
   mongo-data:
     driver: local
-
-networks:
-  app-network:
-    driver: bridge
+  # exclude:

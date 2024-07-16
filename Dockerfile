@@ -1,12 +1,13 @@
 FROM node:18
 
-WORKDIR /home/src/app
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
 
 COPY server/. .
 
-RUN npm install
+RUN npm install && npm cache clean --force
 
 EXPOSE 3000
 
-CMD ["node", "server.js"]
+CMD ["npm", "run", "dev"]
 
