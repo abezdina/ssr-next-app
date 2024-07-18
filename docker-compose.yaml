@@ -1,12 +1,12 @@
 version: '3.8'
 services:
-  nodejs-app:
+  server:
     build:
-      context: .
+      context: ./server
       dockerfile: Dockerfile
       args:
         - PORT=${PORT}
-    container_name: nodejs-app
+    container_name: server
     restart: always
     ports:
       - 3000:${PORT}
@@ -20,7 +20,7 @@ services:
       - .env
     volumes:
       - ./server:/usr/src/app
-      - /usr/src/app/node_modules
+      - exclude:/usr/src/app/node_modules
   mongo-db:
     image: mongo:latest
     container_name: mongo-db
@@ -48,4 +48,4 @@ services:
 volumes:
   mongo-data:
     driver: local
-  # exclude:
+  exclude:
